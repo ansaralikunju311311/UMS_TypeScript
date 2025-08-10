@@ -11,3 +11,13 @@ export const createStudent = async (student)=>
 {
     return await StudentModel.create(student);
 }
+
+
+
+
+export const updatedStudentRepository=async (id,studentData)=>
+{
+   const updatedData = await StudentModel.findByIdAndUpdate(id,studentData,{new:true});
+   if(!updatedData) throw new Error('the studet is not avalable ');
+   return updatedData
+}

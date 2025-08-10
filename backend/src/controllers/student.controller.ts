@@ -1,5 +1,6 @@
 import { signupStudent } from "../services/student.service";
 import { loginStudent } from "../services/student.service";
+import {editstudentService} from "../services/student.service"
 export const studentSignup = async (req,res)=>
 {
     try {
@@ -31,5 +32,25 @@ export const studentLogin = async (req,res)=>
 
         console.log("fnfjfjbfjbfjbjb")
         res.status(400).json({error:error.message});
+    }
+}
+
+export const editProfile = async (req,res)=>
+{
+    try
+    {
+        const id =  req.params.id;
+        const data = req.body;
+
+
+        const updatedData = await editstudentService(id,data);
+        
+        res.status(200).json({
+            message:'data updated correctly'
+        },updatedData)
+    }
+    catch(error)
+    {
+        res.status(500).json({error:error.message})
     }
 }

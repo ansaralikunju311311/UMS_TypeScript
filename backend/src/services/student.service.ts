@@ -1,9 +1,10 @@
 import { findstudentByEmail
 
- } from "../repository/student.repositoty";
+ ,updatedStudentRepository} from "../repository/student.repositoty";
 import { hashPassword } from "../utils/hash";
  import { createStudent } from "../repository/student.repositoty";
  import { comparePassword } from "../utils/hash";
+ 
 
 export const signupStudent = async (studentData)=>
 {
@@ -46,7 +47,14 @@ export const loginStudent = async (studentData)=>
     }
 
     return existing
-
-    
-    
 }
+
+
+export const editstudentService = async (id,studentData)=>
+{
+    if(!id) throw new Error('id is required');
+    if(!studentData) throw new Error('data is require');
+
+    return await updatedStudentRepository(id,studentData);
+}
+
