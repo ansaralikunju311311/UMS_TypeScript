@@ -1,5 +1,5 @@
 import { comparePassword } from "../utils/hash";
-import { findAdminByEmail } from "../repository/admin.repositoty";
+import { findAdminByEmail,allUserRepository} from "../repository/admin.repositoty";
 export const loginAdmin = async (data)=>
 {
     const {email,password} = data
@@ -20,3 +20,7 @@ export const loginAdmin = async (data)=>
     return existing
 }
 
+export const allUser = async()=>
+{
+    return await allUserRepository();
+}
