@@ -1,0 +1,23 @@
+import { loginAdmin } from "../services/admin.service";
+
+export const adminLogin= async(req,res)=>
+{
+
+    try {
+        
+        const {email,password} = req.body;
+    const admin =  await loginAdmin({email,password})
+
+   console.log("here",admin)
+    res.status(200).json({message:"login success"},admin)
+    } catch (error) {
+        
+
+    
+
+        res.status(500).json({error:error.message})
+    }
+    
+
+
+}
