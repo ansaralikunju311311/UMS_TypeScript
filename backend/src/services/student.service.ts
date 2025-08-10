@@ -1,60 +1,54 @@
-import { findstudentByEmail
-
- ,updatedStudentRepository} from "../repository/student.repositoty";
+import {
+  findstudentByEmail,
+  updatedStudentRepository,
+  createStudent,
+} from "../repository/student.repository";
 import { hashPassword } from "../utils/hash";
- import { createStudent } from "../repository/student.repositoty";
  import { comparePassword } from "../utils/hash";
- 
+ import { User } from "../interface/student.interface";
 
-export const signupStudent = async (studentData)=>
-{
-    const {name,email,password} = studentData
-      const existing = await findstudentByEmail(email);
-      if(existing) throw new Error("email is already exisit");
+export const signupStudent = async (studentData: User): Promise<User> => {
+  const { email, password } = studentData;
+  const existing = await findstudentByEmail(email);
+  if (existing) {
+    throw new Error("Email is already in use.");
+  }
 
-      const hashedPassword = await hashPassword(password);
+  const hashedPassword = await hashPassword(password);
 
-      const newStudent ={
-        ...studentData,
-        password:hashedPassword
-      };
-      return await createStudent(newStudent)
-}
-
-
-
-export const loginStudent = async (studentData)=>
-{
-    console.log(studentData)
-    const {email,password} = studentData;
-
-    
-    const existing = await findstudentByEmail(email);
-
-    console.log("exit",existing)
-    if(!existing)
-    {
-        throw new Error("the user is not exist here")
-    }
-    const match = await comparePassword(password,existing.password);
-
-    console.log("passowrd",password)
+  const newStudent = {
+    ...studentData,
+    password: hashedPassword,
+  };
+  return await createStudent(newStudent);
+};
 
 
-    if (!match) {
-        console.log("fbfhib")
-        throw new Error("Invalid credentials");
-    }
 
-    return existing
-}
+export const loginStudent = async (studentData: Omit<User, 'name'>): Promise<User> => {
+  const { email, password } = studentData;
+
+  const existing = await findstudentByEmail(email);
+  if (!existing) {
+    throw new Error("User not found.");
+  }
+
+  const match = await comparePassword(password, existing.password);
+  if (!match) {
+    throw new Error("Invalid credentials.");
+  }
+
+  return existing;
+};
 
 
-export const editstudentService = async (id,studentData)=>
-{
-    if(!id) throw new Error('id is required');
-    if(!studentData) throw new Error('data is require');
+export const editstudentService = async (
+  id: string,
+  studentData: Partial<User>
+): Promise<User | null> => {
+  if (!id) throw new Error("ID is required.");
+  if (!studentData) throw new Error("Update data is required.");
 
-    return await updatedStudentRepository(id,studentData);
-}
+  return await updatedStudentRepository(id, studentData);
+};
 

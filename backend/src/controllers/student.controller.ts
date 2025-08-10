@@ -1,56 +1,60 @@
-import { signupStudent } from "../services/student.service";
-import { loginStudent } from "../services/student.service";
-import {editstudentService} from "../services/student.service"
-export const studentSignup = async (req,res)=>
-{
-    try {
-        
-        const {name,email,password} = req.body;
-        const student = await signupStudent({name,email,password});
-        console.log(req.body)
-        res.status(201).json({message:'signup suscess',student});
+import { Request, Response } from 'express';
+import {
+  signupStudent,
+  loginStudent,
+  editstudentService,
+} from '../services/student.service';
+import { User } from '../interface/student.interface';
 
-    } catch (error) {
-        res.status(400).json({error:error.message})
+export const studentSignup = async (
+  req: Request<{}, {}, User>,
+  res: Response
+): Promise<Response> => {
+  try {
+    const student = await signupStudent(req.body);
+    return res.status(201).json({ message: 'Signup successful', data: student });
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: { message: error.message } });
     }
-}
+    return res.status(500).json({ error: { message: 'Unknown error' } });
+  }
+};
 
-export const studentLogin = async (req,res)=>
-{
-    try {
-        
-         const {email,password} = req.body;
-
-         console.log(req.body)
-
-         const student = await loginStudent({email,password});
-
-         console.log("check",student)
-         res.status(201).json({message:'login success'},student);
-
-    } catch (error) {
-
-        console.log("fnfjfjbfjbfjbjb")
-        res.status(400).json({error:error.message});
+export const studentLogin = async (
+  req: Request<{}, {}, Omit<User, 'name'>>,
+  res: Response
+): Promise<Response> => {
+  try {
+    const student = await loginStudent(req.body);
+    return res.status(200).json({ message: 'Login successful', data: student });
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: { message: error.message } });
     }
-}
+    return res.status(500).json({ error: { message: 'Unknown error' } });
+  }
+};
 
-export const editProfile = async (req,res)=>
-{
-    try
-    {
-        const id =  req.params.id;
-        const data = req.body;
+export const editProfile = async (
+  req: Request<{ id: string }, {}, Partial<User>>,
+  res: Response
+): Promise<Response> => {
+  try {
+    const { id } = req.params;
+    const updatedData = await editstudentService(id, req.body);
 
-
-        const updatedData = await editstudentService(id,data);
-        
-        res.status(200).json({
-            message:'data updated correctly'
-        },updatedData)
+    if (!updatedData) {
+      return res.status(404).json({ error: { message: 'Student not found' } });
     }
-    catch(error)
-    {
-        res.status(500).json({error:error.message})
+
+    return res
+      .status(200)
+      .json({ message: 'Profile updated successfully', data: updatedData });
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: { message: error.message } });
     }
-}
+    return res.status(500).json({ error: { message: 'Unknown error' } });
+  }
+};

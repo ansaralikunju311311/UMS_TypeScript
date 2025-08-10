@@ -1,26 +1,23 @@
 import { comparePassword } from "../utils/hash";
-import { findAdminByEmail,allUserRepository} from "../repository/admin.repositoty";
-export const loginAdmin = async (data)=>
-{
-    const {email,password} = data
-   const existing = await findAdminByEmail(email);
-   console.log(existing?.password);
+import { findAdminByEmail, allUserRepository } from "../repository/admin.repository";
+import { User } from "../interface/student.interface";
+export const loginAdmin = async (data: Omit<User, 'name'>): Promise<User> => {
+  const { email, password } = data;
+  const existing = await findAdminByEmail(email);
 
+  if (!existing) {
+    throw new Error("Admin user not found.");
+  }
 
-   if(!existing) throw new Error('not valid user')
-  
+  const match = await comparePassword(password, existing.password);
 
-     const match = await comparePassword(password,existing?.password);
+  if (!match) {
+    throw new Error("Invalid credentials.");
+  }
 
-     if (!match) {
-        console.log("fbfhib")
-        throw new Error("Invalid credentials");
-    }
+  return existing;
+};
 
-    return existing
-}
-
-export const allUser = async()=>
-{
-    return await allUserRepository();
-}
+export const allUser = async (): Promise<User[]> => {
+  return await allUserRepository();
+};

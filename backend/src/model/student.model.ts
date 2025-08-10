@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
-const studentSchema = new mongoose.Schema({
-    email:String,
-    name:{
-        type :String,
-        unique:true
-    },
-    password:String,
-})
-export const StudentModel = mongoose.model('Student',studentSchema)
+import { User } from '../interface/student.interface';
+
+const studentSchema = new mongoose.Schema<User>({
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+});
+
+export const StudentModel = mongoose.model<User>('Student', studentSchema);
